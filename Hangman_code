@@ -1,0 +1,225 @@
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+import java.io.Console;
+
+
+public class HangNandan2 {
+    private static String[] words;
+    private static String word;
+    private static String asterisk;
+    private static int count = 0;
+    private static final int MAX_TRIES = 7;
+
+    public static void main(String[] args) {
+        try (Scanner scanner = new Scanner(System.in)) {
+            boolean playAgain = true;
+
+            while (playAgain) {
+                System.out.println("Welcome to HangNandan!");
+                System.out.println("Choose an option:");
+                System.out.println("1. Let computer choose a word.");
+                System.out.println("2. Enter your own word.");
+                int choice = scanner.nextInt();
+
+                switch (choice) {
+                    case 1:
+                        loadWordsFromFile("words.txt");
+                        word = getRandomWord();
+                        break;
+                        case 2:
+                        System.out.println("Enter the word:");
+                        Console inputConsole = System.console();
+                        if (inputConsole != null) {
+                            char[] ch = inputConsole.readPassword();
+                            String pass = String.valueOf(ch);
+                            word = pass;
+                            String wordWithoutSpace = word.replace(" ", ""); // Corrected line
+                            word = wordWithoutSpace;
+
+                        } else {
+                            System.out.println("Console is not available");
+                        }
+                        break;
+
+                        /*case 2:
+                        System.out.println("Enter the word:");
+                        Console enteredWord = System.console();
+                        String wordWithoutSpace = enteredWord.replace(" ", ""); 
+                        word = wordWithoutSpace; 
+                        break;
+*/
+                        /*case 2:
+                        System.out.println("Enter the word:");
+                        Console c = System.console();
+                        char[] ch = c.readPassword();
+                        String pass = String.valueOf(ch);
+                        word = pass;
+                        break;*/
+                    default:
+                        System.out.println("Invalid choice. Please enter 1 or 2.");
+                        continue; // Restart the loop
+                }
+                initializeGame();
+
+                while (count < MAX_TRIES && asterisk.contains("*")) {
+                    promptUserForGuess();
+                    String guess = scanner.next().toLowerCase();
+                    hang(guess);
+                }
+
+                handleGameResult();
+
+                System.out.println("Do You Want To Play Again? (YES/NO)");
+                String playAgainChoice = scanner.next().toLowerCase();
+                if (!playAgainChoice.equals("yes")) {
+                playAgain = false;
+            }
+
+            }
+        } catch (FileNotFoundException e) {
+            System.err.println("File not found: " + e.getMessage());
+        }
+    }
+    
+    private static void initializeGame() {
+        asterisk = new String(new char[word.length()]).replace("\0", "*");
+        count = 0;
+    }
+
+    private static void promptUserForGuess() {
+        System.out.println("Guess any letter in the word");
+        System.out.println(asterisk);
+    }
+
+    private static void loadWordsFromFile(String fileName) throws FileNotFoundException {
+        List<String> wordList = new ArrayList<>();
+        try (Scanner scanner = new Scanner(new File(fileName))) {
+            while (scanner.hasNextLine()) {
+                wordList.add(scanner.nextLine().trim());
+            }
+        }
+        words = wordList.toArray(new String[0]);
+    }
+
+    private static String getRandomWord() {
+        return words[(int) (Math.random() * words.length)];
+    }
+
+    private static void hang(String guess) {
+        String newAsterisk = "";
+        for (int i = 0; i < word.length(); i++) {
+            if (word.charAt(i) == guess.charAt(0)) {
+                newAsterisk += guess.charAt(0);
+            } else if (asterisk.charAt(i) != '*') {
+                newAsterisk += word.charAt(i);
+            } else {
+                newAsterisk += "*";
+            }
+        }
+
+        if (asterisk.equals(newAsterisk)) {
+            count++;
+            hangmanImage();
+        } else {
+            asterisk = newAsterisk;
+        }
+        if (asterisk.equals(word)) {
+            System.out.println("Correct! You win! The word was " + word);
+        }
+    }
+
+    private static void handleGameResult() {
+        if (count == MAX_TRIES) {
+            System.out.println("GAME OVER!");
+            System.out.println("The word was " + word);
+        }
+    }
+
+    public static void hangmanImage() {
+        if (count == 1) {
+            System.out.println("Wrong guess, try again");
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println("___|___");
+            System.out.println();
+        }
+        if (count == 2) {
+            System.out.println("Wrong guess, try again");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("___|___");
+        }
+        if (count == 3) {
+            System.out.println("Wrong guess, try again");
+            System.out.println("   ____________");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   | ");
+            System.out.println("___|___");
+        }
+        if (count == 4) {
+            System.out.println("Wrong guess, try again");
+            System.out.println("   ____________");
+            System.out.println("   |          _|_");
+            System.out.println("   |         /   \\");
+            System.out.println("   |        |     |");
+            System.out.println("   |         \\_ _/");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("   |");
+            System.out.println("___|___");
+        }
+        if (count == 5) {
+            System.out.println("Wrong guess, try again");
+            System.out.println("   ____________");
+            System.out.println("   |          _|_");
+            System.out.println("   |         /   \\");
+            System.out.println("   |        |     |");
+            System.out.println("   |         \\_ _/");
+            System.out.println("   |           |");
+            System.out.println("   |           |");
+            System.out.println("   |");
+            System.out.println("___|___");
+        }
+        if (count == 6) {
+            System.out.println("Wrong guess, try again");
+            System.out.println("   ____________");
+            System.out.println("   |          _|_");
+            System.out.println("   |         /   \\");
+            System.out.println("   |        |     |");
+            System.out.println("   |         \\_ _/");
+            System.out.println("   |           |");
+            System.out.println("   |           |");
+            System.out.println("   |          / \\ ");
+            System.out.println("___|___      /   \\");
+        }
+        if (count == 7) {
+            System.out.println("GAME OVER!");
+            System.out.println("   ____________");
+            System.out.println("   |          _|_");
+            System.out.println("   |         /   \\");
+            System.out.println("   |        |     |");
+            System.out.println("   |         \\_ _/");
+            System.out.println("   |          _|_");
+            System.out.println("   |         / | \\");
+            System.out.println("   |          / \\ ");
+            System.out.println("___|___      /   \\");
+            System.out.println("GAME OVER! The word was " + word);
+        }
+    }
+}
